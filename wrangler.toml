@@ -1,0 +1,3 @@
+kv_namespaces = [
+  { binding = "IDL_CACHE", id = "YOUR_KV_ID" }
+]
