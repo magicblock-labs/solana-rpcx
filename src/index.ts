@@ -2,6 +2,7 @@ import { Provider } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { handleGetParsedAccountData } from './handlers/getParsedAccountData';
 import { handleGetParsedAccountsData } from './handlers/getParsedAccountsData';
+import { handleWebSocketConnection } from './websocketHandler';
 
 export class SimpleProvider implements Provider {
 	readonly connection: Connection;
@@ -18,46 +19,16 @@ const JSON_HEADERS = {
 };
 
 export default {
-	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const rpcEndpoint = request.headers.get("Rpc") || env.RPC_ENDPOINT || 'https://rpc.magicblock.app/mainnet/';
 
-		const rpcEndpoint = request.headers.get("Rpc") || env.RPC_ENDPOINT || 'https://rpc.magicblock.app/mainnet/';
     if (request.headers.get('Upgrade') === 'websocket') {
       const webSocketPair = new WebSocketPair();
       const [client, server] = Object.values(webSocketPair);
 
-      server.accept();
+			const wsEndpoint = rpcEndpoint.replace('https://', 'wss://');
+      await handleWebSocketConnection(server, wsEndpoint);
 
-      server.addEventListener('message', async (event) => {
-        try {
-          const wsEndpoint = rpcEndpoint.replace('https://', 'wss://');
-          const provider = new SimpleProvider(new Connection(rpcEndpoint));
-
-          const message = JSON.parse(event.data as string);
-
-
-          if (message.method === 'getParsedAccountData') {
-            const result = await handleGetParsedAccountData(message, provider, rpcEndpoint, env, ctx);
-            server.send(JSON.stringify(result));
-          } else if (message.method === 'getParsedAccountsData') {
-            const result = await handleGetParsedAccountsData(message, provider, rpcEndpoint, env, ctx);
-            server.send(JSON.stringify(result));
-          } else {
-            // Proxy other WebSocket messages
-            const ws = new WebSocket(wsEndpoint);
-            ws.send(JSON.stringify(message));
-            ws.addEventListener('message', (wsEvent) => {
-              server.send(wsEvent.data);
-            });
-          }
-        } catch (error: unknown) {
-					console.log("Error");
-          if (error instanceof Error) {
-            server.send(JSON.stringify({ error: error.message }));
-          } else {
-            server.send(JSON.stringify({ error: 'An unknown error occurred' }));
-          }
-        }
-      });
       return new Response(null, {
         status: 101,
         webSocket: client,
