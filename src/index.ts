@@ -21,13 +21,14 @@ const JSON_HEADERS = {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const rpcEndpoint = request.headers.get("Rpc") || env.RPC_ENDPOINT || 'https://rpc.magicblock.app/mainnet/';
+		const provider = new SimpleProvider(new Connection(rpcEndpoint));
 
     if (request.headers.get('Upgrade') === 'websocket') {
       const webSocketPair = new WebSocketPair();
       const [client, server] = Object.values(webSocketPair);
 
 			const wsEndpoint = rpcEndpoint.replace('https://', 'wss://');
-      await handleWebSocketConnection(server, wsEndpoint);
+      await handleWebSocketConnection(provider, server, wsEndpoint, env, ctx);
 
       return new Response(null, {
         status: 101,
@@ -37,7 +38,6 @@ export default {
 
     // Handle HTTP requests
 		const body = await request.json() as { method: string; id: string; params?: any };
-		const provider = new SimpleProvider(new Connection(rpcEndpoint));
 
 		if (body.method === 'getParsedAccountData') {
       const result = await handleGetParsedAccountData(body, provider, rpcEndpoint, env, ctx);

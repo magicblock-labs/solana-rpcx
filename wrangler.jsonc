@@ -7,6 +7,9 @@
 	"name": "rpcx",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-02-14",
+	"routes": [
+		{ "pattern": "rpcx.magicblock.app", "custom_domain": true }
+	],
 	"observability": {
 		"enabled": true
 	}
