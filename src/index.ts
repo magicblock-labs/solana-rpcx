@@ -20,7 +20,12 @@ const JSON_HEADERS = {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const rpcEndpoint = request.headers.get("Rpc") || env.RPC_ENDPOINT || 'https://rpc.magicblock.app/mainnet/';
+		let rpcEndpoint = request?.headers?.get("Rpc")?.trim();
+
+		if (!rpcEndpoint) {
+			rpcEndpoint = env?.RPC_ENDPOINT?.trim() || 'https://api.mainnet-beta.solana.com/';
+		}
+
 		const provider = new SimpleProvider(new Connection(rpcEndpoint));
 
     if (request.headers.get('Upgrade') === 'websocket') {

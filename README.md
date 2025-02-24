@@ -17,11 +17,13 @@ wrangler dev
 
 ### Deploy
 
-Deploy to Cloudflare:
+Deploy to Cloudflare to parse on the edge:
 
 ```bash
 wrangler deploy
 ```
+
+Set the `RPC_ENDPOINT` environment variable to the URL of the base rpc endpoint.
 
 ## Usage Examples
 
