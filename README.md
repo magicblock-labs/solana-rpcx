@@ -28,10 +28,10 @@ wrangler deploy
 ### 1. Fetch a Single Parsed Account
 
 ```bash
-curl "http://localhost:8787" \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"getParsedAccountData","params":["GFg67j2Yq7wcW8ikRgtiRpVCEmYUw9BjteRehjNwnQrt"]}'
+curl "https://rpcx.gabriele-c0b.workers.dev" \
+	-X POST \
+	-H "Content-Type: application/json" \
+	-d '{"jsonrpc":"2.0","id":1,"method":"getParsedAccountData","params":["FPxc7bcafdCQqHS8S1KX4ENCPP3vncxsKK3yRZ3mMzGn", {"encoding": "base64"}]}'
 ```
 
 Example response:
