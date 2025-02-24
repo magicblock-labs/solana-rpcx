@@ -28,7 +28,7 @@ wrangler deploy
 ### 1. Fetch a Single Parsed Account
 
 ```bash
-curl "https://rpcx.gabriele-c0b.workers.dev" \
+curl "https://rpcx.magicblock.app" \
 	-X POST \
 	-H "Content-Type: application/json" \
 	-d '{"jsonrpc":"2.0","id":1,"method":"getParsedAccountData","params":["FPxc7bcafdCQqHS8S1KX4ENCPP3vncxsKK3yRZ3mMzGn", {"encoding": "base64"}]}'
@@ -62,7 +62,7 @@ Example response:
 ### 2. Fetch Multiple Parsed Accounts
 
 ```bash
-curl -s "http://localhost:8787" \
+curl -s "https://rpcx.magicblock.app" \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":"0","method":"getParsedAccountsData","params":{"pubkeys":["GFg67j2Yq7wcW8ikRgtiRpVCEmYUw9BjteRehjNwnQrt","FPxc7bcafdCQqHS8S1KX4ENCPP3vncxsKK3yRZ3mMzGn"]}}' | jq .
@@ -73,7 +73,7 @@ curl -s "http://localhost:8787" \
 Add the Rpc header to specify a custom RPC endpoint:
 
 ```bash
-curl -s "http://localhost:8787" \
+curl -s "https://rpcx.magicblock.app" \
   -X POST \
   -H "Content-Type: application/json" \
   -H "Rpc: https://api.mainnet-beta.solana.com/" \
@@ -85,7 +85,7 @@ curl -s "http://localhost:8787" \
 Connect:
 
 ```bash
-wscat -c "wss://rpcx.gabriele-c0b.workers.dev/"
+wscat -c "wss://rpcx.magicblock.app"
 ```
 
 Subscribe to updates:
