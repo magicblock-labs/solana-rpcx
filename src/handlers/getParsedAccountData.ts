@@ -38,10 +38,13 @@ export async function handleGetParsedAccountData(
       return errorResponse(body.id, -32602, "IDL not found for program", { programId: owner.toString() });
     }
 
+
     try {
       const program = new Program(idl as Idl, provider);
       accountInfo.result.value.data = decodeAccount(dataBuffer, program);
+			console.log("Decoded account data:", accountInfo.result.value.data);
     } catch (error: unknown) {
+			console.error("Failed to decode account data:", error);
       return errorResponse(body.id, -32602, "Failed to decode account data", {
         error: error instanceof Error ? error.message : String(error),
         account: body.params?.[0]

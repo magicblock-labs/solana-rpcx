@@ -1,3 +1,6 @@
+[build.deps]
+browser_only_package_imports = ["buffer"]
+
 kv_namespaces = [
   { binding = "IDL_CACHE", id = "YOUR_KV_ID" }
 ]

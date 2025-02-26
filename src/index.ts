@@ -3,6 +3,8 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { handleGetParsedAccountData } from './handlers/getParsedAccountData';
 import { handleGetParsedAccountsData } from './handlers/getParsedAccountsData';
 import { handleWebSocketConnection } from './websocketHandler';
+import { Buffer } from 'buffer';
+(globalThis as any).Buffer = Buffer;
 
 export class SimpleProvider implements Provider {
 	readonly connection: Connection;
