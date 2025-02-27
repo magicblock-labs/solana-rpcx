@@ -1,7 +1,7 @@
 import { Idl, Program, Provider } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
-import { errorResponse, getIdl, decodeAccount } from '../utils';
+import { errorResponse, getIdl, decodeAccount } from '../utils/utils';
 
 export async function handleGetParsedAccountsData(body: { id: string, params?: any }, provider: Provider, rpcEndpoint: string, env: Env, ctx: ExecutionContext) {
   if (!body.params || !body.params.pubkeys || !Array.isArray(body.params.pubkeys)) {

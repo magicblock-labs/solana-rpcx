@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
 import { Program, Provider } from '@coral-xyz/anchor';
-import { decodeAccount, getIdl } from './utils';
+import { decodeAccount, getIdl } from './utils/utils';
 
 export async function handleWebSocketConnection(
 	provider: Provider,

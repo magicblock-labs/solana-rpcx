@@ -1,6 +1,7 @@
 import { Program, Provider } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
+import { formatIdl } from './convertLegacyIdl';
 
 export function errorResponse(id: string, code: number, message: string, data?: any): unknown {
 	return {
@@ -23,6 +24,7 @@ export async function getIdl(
   let idl = env.IDL_CACHE ? await env.IDL_CACHE.get(cacheKey, 'json') : null;
   if (!idl) {
     idl = await Program.fetchIdl(owner, provider);
+		idl = formatIdl(idl, ownerStr);
     if (env.IDL_CACHE && idl) {
       ctx.waitUntil(env.IDL_CACHE.put(cacheKey, JSON.stringify(idl), { expirationTtl: 3600 }));
     }

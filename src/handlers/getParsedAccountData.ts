@@ -1,7 +1,7 @@
 import { Idl, Program, Provider } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
-import { errorResponse, getIdl, decodeAccount } from '../utils';
+import { errorResponse, getIdl, decodeAccount } from '../utils/utils';
 
 export async function handleGetParsedAccountData(
   body: { id: string; params?: any },

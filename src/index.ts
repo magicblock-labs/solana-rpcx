@@ -4,7 +4,9 @@ import { handleGetParsedAccountData } from './handlers/getParsedAccountData';
 import { handleGetParsedAccountsData } from './handlers/getParsedAccountsData';
 import { handleWebSocketConnection } from './websocketHandler';
 import { Buffer } from 'buffer';
+import { BN } from 'bn.js';
 (globalThis as any).Buffer = Buffer;
+(globalThis as any).BN = BN;
 
 export class SimpleProvider implements Provider {
 	readonly connection: Connection;
