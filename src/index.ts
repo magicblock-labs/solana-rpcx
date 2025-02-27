@@ -46,7 +46,19 @@ export default {
     }
 
     // Handle HTTP requests
-		const body = await request.json() as { method: string; id: string; params?: any };
+		let body;
+		try {
+			body = await request.json() as { method: string; id: string; params?: any };
+		} catch (error: any) {
+			return new Response(JSON.stringify({
+				jsonrpc: "2.0",
+				error: { code: -32700, message: "Parse error", data: error.message },
+				id: null
+			}), {
+				status: 400,
+				headers: JSON_HEADERS
+			});
+		}
 
 		if (body.method === 'getParsedAccountData') {
       const result = await handleGetParsedAccountData(body, provider, rpcEndpoint, env, ctx);
