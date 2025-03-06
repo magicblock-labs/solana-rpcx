@@ -95,7 +95,7 @@ curl -s "https://rpcx.magicblock.app" \
   -X POST \
   -H "Content-Type: application/json" \
   -H "Rpc: https://api.mainnet-beta.solana.com/" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"getParsedAccountData","params":["FPxc7bcafdCQqHS8S1KX4ENCPP3vncxsKK3yRZ3mMzGn"]}' | jq .
+  -d '{"jsonrpc":"2.0","id":1,"method":"getParsedAccountData","params":["5RgeA5P8bRaynJovch3zQURfJxXL3QK2JYg1YamSvyLb"]}' | jq .
 ```
 
 ### 4. Subscribe to Parsed Account Updates

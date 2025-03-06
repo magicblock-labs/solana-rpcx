@@ -40,11 +40,10 @@ type RpcResponse = {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		let rpcEndpoint = request?.headers?.get('Rpc')?.trim();
-		console.log(env);
+
 		if (!rpcEndpoint) {
-			rpcEndpoint = env.RPC_ENDPOINT || 'https://api.mainnet-beta.solana.com/';
+			rpcEndpoint = env?.RPC_ENDPOINT?.trim() || 'https://api.mainnet-beta.solana.com/';
 		}
-		console.log('Endpoint used:' + rpcEndpoint);
 
 		const provider = new SimpleProvider(new Connection(rpcEndpoint));
 
