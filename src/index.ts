@@ -26,6 +26,10 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		let rpcEndpoint = request?.headers?.get("Rpc")?.trim();
 
+		if (rpcEndpoint === "devnet"){
+			rpcEndpoint = env?.RPC_ENDPOINT_DEVNET?.trim();
+		}
+
 		if (!rpcEndpoint) {
 			rpcEndpoint = env?.RPC_ENDPOINT?.trim() || 'https://api.mainnet-beta.solana.com/';
 		}

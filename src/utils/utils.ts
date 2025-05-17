@@ -2,6 +2,7 @@ import { Program, Provider } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
 import { formatIdl } from './convertLegacyIdl';
+import BN from "bn.js";
 
 export function errorResponse(id: string, code: number, message: string, data?: any): unknown {
 	return {
@@ -33,6 +34,21 @@ export async function getIdl(
   return idl;
 }
 
+function convertBNToDecimal(obj: any): any {
+	if (obj instanceof BN) {
+		return obj.toString(10);
+	} else if (Array.isArray(obj)) {
+		return obj.map(convertBNToDecimal);
+	} else if (obj && typeof obj === "object") {
+		const result: any = {};
+		for (const key in obj) {
+			result[key] = convertBNToDecimal(obj[key]);
+		}
+		return result;
+	}
+	return obj;
+}
+
 export function decodeAccount(dataBuffer: Buffer, program: Program): any {
   const discriminator = dataBuffer.subarray(0, 8);
   const accountType = program.idl.accounts?.find(acc =>
@@ -41,5 +57,6 @@ export function decodeAccount(dataBuffer: Buffer, program: Program): any {
   if (!accountType) {
     throw new Error("Account type not found for discriminator");
   }
-  return program.coder.accounts.decode(accountType.name, dataBuffer);
+	const decoded = program.coder.accounts.decode(accountType.name, dataBuffer);
+	return convertBNToDecimal(decoded);
 }

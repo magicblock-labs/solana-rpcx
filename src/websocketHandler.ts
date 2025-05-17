@@ -17,11 +17,21 @@ export async function handleWebSocketConnection(
 
 		if (message.method === 'subscribeParsedAccount') {
 			const accountPubkey = new PublicKey(message.params[0]);
+			// Extract commitment from params if available
+			const configParam = message.params[1] || {};
+			const commitment = configParam.commitment || 'finalized';
+
 			const subscribeMessage = {
 				jsonrpc: '2.0',
 				id: message.id,
 				method: 'accountSubscribe',
-				params: [message.params[0], { encoding: 'base64' }]
+				params: [
+					message.params[0],
+					{
+						encoding: 'base64',
+						commitment: commitment
+					}
+				]
 			};
 			backendSocket.send(JSON.stringify(subscribeMessage));
 
