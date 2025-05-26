@@ -12,8 +12,9 @@ A Cloudflare worker that extends Solana RPC with account parsing capabilities th
 
 Start local development server:
 
+```bash
 wrangler dev
-
+```
 
 ### Deploy
 
