@@ -5,6 +5,7 @@ import { handleGetParsedAccountsData } from './handlers/getParsedAccountsData';
 import { handleWebSocketConnection } from './websocketHandler';
 import { Buffer } from 'buffer';
 import { BN } from 'bn.js';
+import { handleGetParsedTransaction } from './handlers/getParsedTransaction';
 (globalThis as any).Buffer = Buffer;
 (globalThis as any).BN = BN;
 
@@ -72,6 +73,11 @@ export default {
 		if (body.method === 'getParsedAccountsData') {
       const result = await handleGetParsedAccountsData(body, provider, rpcEndpoint, env, ctx);
       return new Response(JSON.stringify(result), { headers: JSON_HEADERS });
+		}
+
+		if (body.method === 'getParsedTransaction') {
+			const result = await handleGetParsedTransaction(body, provider, rpcEndpoint, env, ctx);
+			return new Response(JSON.stringify(result), { headers: JSON_HEADERS });
 		}
 
     // Proxy all other HTTP requests
