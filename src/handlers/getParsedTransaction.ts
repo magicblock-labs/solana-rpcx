@@ -59,6 +59,7 @@ export async function handleGetParsedTransaction(
 					instruction.name = decodedTransaction[index]?.name;
 					instruction.parsedData = decodedTransaction[index]?.data;
 					instruction.programId = programId.toString();
+					instruction.programName = program.idl.metadata?.name;
 				}
 			});
 
