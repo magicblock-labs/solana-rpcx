@@ -25,7 +25,10 @@ export async function handleGetParsedAccountData(
       method: 'getAccountInfo',
       params: [
         body.params?.[0],
-        { encoding: 'base64' }
+        {
+					encoding: 'base64',
+					commitment: body.params.commitment || 'processed',
+				}
       ]
     })
   });
@@ -48,7 +51,14 @@ export async function handleGetParsedAccountData(
 
     try {
       const program = new Program(idl as Idl, provider);
-      accountInfo.result.value.data = decodeAccount(dataBuffer, program);
+      const decodedAccount = decodeAccount(dataBuffer, program);
+			accountInfo.result.value.data = decodedAccount.data;
+			// @ts-ignore
+			accountInfo.result.value.name = decodedAccount.name;
+			// @ts-ignore
+			accountInfo.result.value.parsed = true;
+			// @ts-ignore
+			accountInfo.result.value.key = body.params?.[0];
     } catch (error: unknown) {
       return errorResponse(body.id, -32602, "Failed to decode account data", {
         error: error instanceof Error ? error.message : String(error),
