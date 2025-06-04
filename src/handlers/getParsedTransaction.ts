@@ -28,40 +28,48 @@ export async function handleGetParsedTransaction(
         {
 					encoding: 'json',
 					commitment: body.params.commitment || 'confirmed',
+					maxSupportedTransactionVersion: 0,
 				}
       ]
     })
   });
+	console.log(req);
   const transactionRes = await fetch(req);
 	let transactionInfo;
 	try{
 		transactionInfo = await transactionRes.json() as { result: { meta: any, slot: number, transaction: any } };
+		console.log(transactionInfo);
 	}catch (error: unknown) {
 		// @ts-ignore
 		return errorResponse(body.id, -32602, "Error parsing response", { error: error.message, account: body.params?.[0], statusCode: accountRes.status});
 	}
   if (transactionInfo.result.transaction) {
-		const programIdIndex = transactionInfo.result.transaction.message.instructions[0].programIdIndex;
-    const programId = new PublicKey(transactionInfo.result.transaction.message.accountKeys[programIdIndex]);
-    const idl = await getIdl(programId, provider, env, ctx);
-
-    if (!idl) {
-      return errorResponse(body.id, -32602, "IDL not found for program", { programId: programId.toString() });
-    }
-
     try {
-      const program = new Program(idl as Idl, provider);
-      const decodedTransaction = decodeTransaction(transactionInfo.result.transaction, program);
-			transactionInfo.result.transaction.message.instructions.forEach((instruction: any, index: number) => {
-				const name = decodedTransaction[index]?.name;
-				const data = decodedTransaction[index]?.data;
-				if (name && data) {
-					instruction.name = decodedTransaction[index]?.name;
-					instruction.parsedData = decodedTransaction[index]?.data;
-					instruction.programId = programId.toString();
-					instruction.programName = program.idl.metadata?.name;
-				}
-			});
+			await Promise.all(transactionInfo.result.transaction.message.instructions.map(async (instruction: any, index: number) => {
+					try {
+						const programIdIndex = instruction.programIdIndex;
+						const programId = new PublicKey(transactionInfo.result.transaction.message.accountKeys[programIdIndex]);
+
+						const idl = await getIdl(programId, provider, env, ctx);
+						if (!idl) return;
+
+						const program = new Program(idl as Idl, provider);
+						const decodedTransaction = decodeTransaction(transactionInfo.result.transaction, program);
+
+						const name = decodedTransaction[index]?.name;
+						const data = decodedTransaction[index]?.data;
+
+						if (name && data) {
+							instruction.name = name;
+							instruction.parsedData = data;
+							instruction.programId = programId.toString();
+							instruction.programName = program.idl.metadata?.name;
+						}
+					} catch (err) {
+						console.error(`Error processing instruction ${index}:`, err);
+					}
+				})
+			);
 
     } catch (error: unknown) {
       return errorResponse(body.id, -32602, "Failed to decode account data", {
