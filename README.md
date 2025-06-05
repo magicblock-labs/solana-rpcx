@@ -6,6 +6,7 @@ A Cloudflare worker that extends Solana RPC with account parsing capabilities th
 
 - `getParsedAccountData` - Parse a single account
 - `getParsedAccountsData` - Parse multiple accounts in batch
+- `getParsedTransaction` - Parse transaction
 - `subscribeParsedAccount` - Subscribe to parsed account updates
 
 ### Development
