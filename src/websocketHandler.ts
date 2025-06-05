@@ -7,12 +7,14 @@ export async function handleWebSocketConnection(
 	provider: Provider,
 	server: WebSocket,
 	rpcEndpoint: string,
-	env: Env, ctx: ExecutionContext) {
+	env: Env,
+	ctx: ExecutionContext
+) {
 	server.accept();
 	const backendSocket = new WebSocket(rpcEndpoint);
 	const subscriptionMap = new Map<number, PublicKey>();
 
-	server.addEventListener('message', async event => {
+	server.addEventListener('message', async (event) => {
 		const message = JSON.parse(event.data as string);
 
 		if (message.method === 'subscribeParsedAccount') {
@@ -48,7 +50,7 @@ export async function handleWebSocketConnection(
 		}
 	});
 
-	backendSocket.addEventListener('message', async event => {
+	backendSocket.addEventListener('message', async (event) => {
 		const message = JSON.parse(event.data as string);
 
 		if (message.method === 'accountNotification') {
