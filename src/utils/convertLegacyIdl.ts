@@ -236,7 +236,8 @@ function getTypeReferences(idl: Idl): Set<string> {
 }
 
 // Remove types that are not used in definition of instructions, accounts, events, or constants
-function removeUnusedTypes(idl: Idl): Idl {
+function removeUnusedTypes(idl: Idl): Idl | null {
+	if (idl == null) return null;
 	const usedElsewhere = getTypeReferences(idl);
 	return { ...idl, types: (idl.types ?? []).filter(type => usedElsewhere.has(type.name)) };
 }
@@ -431,14 +432,16 @@ function convertDefinedTypeArg(arg: LegacyIdlDefinedTypeArg): any {
 }
 
 export function getIdlSpecType(idl: any): IdlSpec {
-	return idl.metadata?.spec ?? 'legacy';
+	return idl?.metadata?.spec ?? 'legacy';
 }
 
 export type IdlSpec = '0.1.0' | 'legacy';
 
-export function formatIdl(idl: any, programAddress?: string): Idl {
+export function formatIdl(idl: any, programAddress?: string): Idl | null {
+	if (!idl) {
+		return null;
+	}
 	const spec = getIdlSpecType(idl);
-
 	switch (spec) {
 		case '0.1.0':
 			return idl as Idl;

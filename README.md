@@ -6,6 +6,7 @@ A Cloudflare worker that extends Solana RPC with account parsing capabilities th
 
 - `getParsedAccountData` - Parse a single account
 - `getParsedAccountsData` - Parse multiple accounts in batch
+- `getParsedTransaction` - Parse transaction
 - `subscribeParsedAccount` - Subscribe to parsed account updates
 
 ### Development
@@ -122,74 +123,4 @@ Subscribe to updates:
 
 ```bash
 {"jsonrpc":"2.0","id":1,"method":"subscribeParsedAccount","params":["F9xLoh5xxLFNb4wYnhAPm73VWyxgBTL1HiPFVEz6uW8X",{"encoding":"jsonParsed","commitment":"confirmed"}]}
-```
-
-### Ts example
-
-You can also directly overwrite and use the getParsedAccountInfo method from the solana-web3.js library for example and call that from ts.
-Run ts script to get parsed account data:
-
-```bash
-npx tsx getParsedAccountData.ts
-```
-
-Example response:
-
-```bash
-Fetching account: F9xLoh5xxLFNb4wYnhAPm73VWyxgBTL1HiPFVEz6uW8X
-{
-  "context": {
-    "slot": 365515764
-  },
-  "value": {
-    "data": {
-      "parsed": {
-        "authority": "GsfNSuZFrT2r4xzSndnCSs9tTXwt47etPqU8yFVnDcXd",
-        "board": {
-          "data": [
-            [
-              0,
-              0,
-              0,
-              2
-            ],
-            [
-              2,
-              0,
-              0,
-              0
-            ],
-            [
-              16,
-              0,
-              0,
-              2
-            ],
-            [
-              4,
-              16,
-              8,
-              4
-            ]
-          ]
-        },
-        "score": 92,
-        "gameOver": false,
-        "direction": 1,
-        "topTile": 0,
-        "newTileX": 0,
-        "newTileY": 3,
-        "newTileLevel": 2,
-        "xp": 0,
-        "level": 0
-      },
-      "program": "2o48ieM95rmHqMWC5B3tTX4DL7cLm4m1Kuwjay3keQSv",
-      "space": 800
-    },
-    "executable": false,
-    "lamports": 6458880,
-    "owner": "2o48ieM95rmHqMWC5B3tTX4DL7cLm4m1Kuwjay3keQSv",
-    "rentEpoch": 18446744073709552000
-  }
-}
 ```

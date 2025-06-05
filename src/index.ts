@@ -5,6 +5,7 @@ import { handleGetParsedAccountsData } from './handlers/getParsedAccountsData';
 import { handleWebSocketConnection } from './websocketHandler';
 import { Buffer } from 'buffer';
 import { BN } from 'bn.js';
+import { handleGetParsedTransaction } from './handlers/getParsedTransaction';
 (globalThis as any).Buffer = Buffer;
 (globalThis as any).BN = BN;
 
@@ -40,6 +41,10 @@ type RpcResponse = {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		let rpcEndpoint = request?.headers?.get('Rpc')?.trim();
+
+		if (rpcEndpoint === "devnet"){
+			rpcEndpoint = env?.RPC_ENDPOINT_DEVNET?.trim();
+		}
 
 		if (!rpcEndpoint) {
 			rpcEndpoint = env?.RPC_ENDPOINT?.trim() || 'https://api.mainnet-beta.solana.com/';
@@ -124,7 +129,11 @@ export default {
 			return new Response(JSON.stringify(result), { headers: JSON_HEADERS });
 		}
 
-		// Proxy all other HTTP requests
+		if (body.method === 'getParsedTransaction') {
+			const result = await handleGetParsedTransaction(body, provider, rpcEndpoint, env, ctx);
+			return new Response(JSON.stringify(result), { headers: JSON_HEADERS });
+		}
+
 		const proxyReq = new Request(rpcEndpoint, {
 			method: request.method,
 			headers: { ...request.headers, 'Content-Type': 'application/json', Accept: 'application/json' },

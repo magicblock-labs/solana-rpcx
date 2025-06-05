@@ -19,11 +19,21 @@ export async function handleWebSocketConnection(
 
 		if (message.method === 'subscribeParsedAccount') {
 			const accountPubkey = new PublicKey(message.params[0]);
+			// Extract commitment from params if available
+			const configParam = message.params[1] || {};
+			const commitment = configParam.commitment || 'processed';
+
 			const subscribeMessage = {
 				jsonrpc: '2.0',
 				id: message.id,
 				method: 'accountSubscribe',
-				params: [message.params[0], { encoding: 'base64', commitment: 'confirmed' }],
+				params: [
+					message.params[0],
+					{
+						encoding: 'base64',
+						commitment: commitment
+					}
+				]
 			};
 			backendSocket.send(JSON.stringify(subscribeMessage));
 
@@ -57,7 +67,10 @@ export async function handleWebSocketConnection(
 				if (idl) {
 					try {
 						const program = new Program(idl, provider);
-						message.params.result.value.data = decodeAccount(dataBuffer, program);
+						let decodedAccount = decodeAccount(dataBuffer, program);
+						message.params.result.value.data = decodedAccount.data;
+						message.params.result.value.name = decodedAccount.name;
+						message.params.result.value.parsed = true;
 					} catch (error) {
 						console.error('Failed to decode account data:', error);
 					}

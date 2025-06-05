@@ -22,11 +22,17 @@ export async function handleGetParsedAccountData(
 		body: JSON.stringify({
 			jsonrpc: '2.0',
 			id: body.id,
-			method: 'getAccountInfo',
-			params: [body.params?.[0], { encoding: 'base64', commitment: 'confirmed' }],
-		}),
-	});
-	const accountRes = await fetch(req);
+      method: 'getAccountInfo',
+      params: [
+        body.params?.[0],
+        {
+					encoding: 'base64',
+					commitment: body.params.commitment || 'processed',
+				}
+      ]
+    })
+  });
+  const accountRes = await fetch(req);
 	let accountInfo;
 	try {
 		accountInfo = (await accountRes.json()) as { result: { value: { data: any; owner: string } } };
@@ -47,16 +53,23 @@ export async function handleGetParsedAccountData(
 			return errorResponse(body.id, -32602, 'IDL not found for program', { programId: owner.toString() });
 		}
 
-		try {
-			const program = new Program(idl as Idl, provider);
-			accountInfo.result.value.data = decodeAccount(dataBuffer, program);
-		} catch (error: unknown) {
-			return errorResponse(body.id, -32602, 'Failed to decode account data', {
-				error: error instanceof Error ? error.message : String(error),
-				account: body.params?.[0],
-			});
-		}
-	}
+    try {
+      const program = new Program(idl as Idl, provider);
+      const decodedAccount = decodeAccount(dataBuffer, program);
+			accountInfo.result.value.data = decodedAccount.data;
+			// @ts-ignore
+			accountInfo.result.value.name = decodedAccount.name;
+			// @ts-ignore
+			accountInfo.result.value.parsed = true;
+			// @ts-ignore
+			accountInfo.result.value.key = body.params?.[0];
+    } catch (error: unknown) {
+      return errorResponse(body.id, -32602, "Failed to decode account data", {
+        error: error instanceof Error ? error.message : String(error),
+        account: body.params?.[0]
+      });
+    }
+  }
 
 	return accountInfo;
 }
