@@ -77,6 +77,7 @@ export function decodeTransaction(transaction: any, program: Program): {name?: s
 		return [];
 	}
 	const decodedInstructions: any[] = [];
+
 	for (const ix of message.instructions) {
 		// Only decode if the instruction belongs to our program
 		const programId = message.accountKeys[ix.programIdIndex];
@@ -96,4 +97,27 @@ export function decodeTransaction(transaction: any, program: Program): {name?: s
 		}
 	}
 	return decodedInstructions;
+}
+
+export function extractEventsFromLogs(program: Program, logs: string[]): any[] {
+	console.log("Parsing log");
+	const events: any[] = [];
+
+	if (!logs || logs.length === 0) return events;
+
+	for (const log of logs) {
+		console.log(log)
+		const prefix = "Program data: ";
+		if (log.startsWith(prefix)) {
+			const base64 = log.slice(prefix.length).trim();
+			try {
+				const decoded = program.coder.events.decode(base64);
+				if (decoded) events.push(formatData(decoded));
+			} catch (err) {
+				console.warn("Failed to decode event:", err);
+			}
+		}
+	}
+
+	return events;
 }

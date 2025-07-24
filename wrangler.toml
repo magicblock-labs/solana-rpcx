@@ -2,5 +2,5 @@
 browser_only_package_imports = ["buffer"]
 
 kv_namespaces = [
-  { binding = "IDL_CACHE", id = "YOUR_KV_ID" }
+  { binding = "IDL_CACHE", id = "e89b5c0a32f3494d9d293a581ca778d6" }
 ]

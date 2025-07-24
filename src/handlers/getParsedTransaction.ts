@@ -1,7 +1,7 @@
 import { Idl, Program, Provider } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { Buffer } from 'buffer';
-import { errorResponse, getIdl, decodeAccount, decodeTransaction } from '../utils/utils';
+import { errorResponse, getIdl, decodeAccount, decodeTransaction, extractEventsFromLogs } from '../utils/utils';
 
 export async function handleGetParsedTransaction(
   body: { id: string; params?: any },
@@ -33,18 +33,17 @@ export async function handleGetParsedTransaction(
       ]
     })
   });
-	console.log(req);
   const transactionRes = await fetch(req);
 	let transactionInfo;
 	try{
 		transactionInfo = await transactionRes.json() as { result: { meta: any, slot: number, transaction: any } };
-		console.log(transactionInfo);
 	}catch (error: unknown) {
 		// @ts-ignore
 		return errorResponse(body.id, -32602, "Error parsing response", { error: error.message, account: body.params?.[0], statusCode: accountRes.status});
 	}
   if (transactionInfo.result.transaction) {
     try {
+			const events: any[] = [];
 			await Promise.all(transactionInfo.result.transaction.message.instructions.map(async (instruction: any, index: number) => {
 					try {
 						const programIdIndex = instruction.programIdIndex;
@@ -55,6 +54,7 @@ export async function handleGetParsedTransaction(
 
 						const program = new Program(idl as Idl, provider);
 						const decodedTransaction = decodeTransaction(transactionInfo.result.transaction, program);
+						events.push(...extractEventsFromLogs(program, transactionInfo.result?.meta?.logMessages || []));
 
 						const name = decodedTransaction[index]?.name;
 						const data = decodedTransaction[index]?.data;
@@ -70,6 +70,7 @@ export async function handleGetParsedTransaction(
 					}
 				})
 			);
+			transactionInfo.result.transaction.events = events;
 
     } catch (error: unknown) {
       return errorResponse(body.id, -32602, "Failed to decode account data", {
