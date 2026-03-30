@@ -80,13 +80,16 @@ export function decodeTransaction(transaction: any, program: Program): {name?: s
 
 	for (const ix of message.instructions) {
 		// Only decode if the instruction belongs to our program
-		const programId = message.accountKeys[ix.programIdIndex];
-		if (programId !== program.programId.toString()) {
+		const accountKey = typeof ix?.programId === 'string'
+			? ix.programId
+			: message.accountKeys[ix.programIdIndex];
+		const programId = typeof accountKey === 'string' ? accountKey : accountKey?.pubkey;
+		if (programId !== program.programId.toString() || typeof ix?.data !== 'string') {
 			decodedInstructions.push({});
 		}else{
 			try {
 				// @ts-ignore
-				const decoded = program.coder.instruction.decode(ix.data, 'base64');
+				const decoded = program.coder.instruction.decode(ix.data, 'base58');
 				decodedInstructions.push({
 					name: decoded?.name,
 					data: formatData(decoded?.data),
